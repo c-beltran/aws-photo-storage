@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Photo Album</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <link rel="stylesheet" type="text/css" href="/style_sheets/album.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  </head>
+  <body>
+    <!-- start of nav -->
+    <nav class="navbar is-link" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/albums">
+          <img src="/assets/camera.png" width="50" height="30">
+          <!-- Icons made by <a href="https://www.flaticon.com/authors/ultimatearm" title="ultimatearm">ultimatearm</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a> -->
+        </a>
+
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="expand-options" onclick="toggleBurger()">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+
+      <div id="expand-options" class="navbar-menu">
+        <div class="navbar-start">
+          <span class="navbar-item" href="/albums">
+            Memorias que existiran por siempre!
+          </span>
+          <a class="navbar-item" onclick="openForm()">
+            <b>Create Album</b>
+          </a>
+
+          <div class="navbar-item is-hoverable">
+            <!-- <a class="navbar-link" onclick="openForm()">
+              Create Album
+            </a> -->
+
+            <!-- <div class="navbar-dropdown">
+              <a class="navbar-item" >
+                Create Album -->
+              </a>
+              <!-- <a class="navbar-item">
+                About
+              </a>
+              <a class="navbar-item">
+                Contact
+              </a>
+              <hr class="navbar-divider">
+              <a class="navbar-item">
+                Report an issue
+              </a> -->
+            <!-- </div> -->
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <div class="buttons">
+              <a id="logout" class="button is-info is-light" href="/" onclick="logOutUser()">
+                <strong>Log Out</strong>
+              </a>
+              <!-- <a class="button is-light">
+                Log in
+              </a> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <!-- end of nav -->
+    <!-- <div class="open-btn">
+    </div> -->
+    <div id="toolPopup" style="z-index: 200;margin: 0 auto;">
+      <div class="form-popup" id="popupForm">
+        <div class="form-container">
+          <h2>Make sure is a memorable name!</h2>
+          <strong>Album Name</strong>
+          <div class="field">
+            <div class="control">
+              <input id="new_album_name" class="input is-primary" type="text" placeholder="Name">
+            </div>
+          </div>
+          <strong>Album Description</strong>
+          </label>
+          <div class="field">
+            <div class="control">
+              <textarea id="new_album_desc" class="textarea is-primary" placeholder="Album Description"></textarea>
+            </div>
+          </div>
+          <button type="button" class="btn" onclick="createAlbum()">Create Album</button>
+          <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+        </div>
+      </div>
+    </div>
+  <section class="section context" style="z-index: 100;>
+    <div class="container">
+      <div id="app"></div>
+        <div>
+            <div class="columns is-multiline is-centered">
+              <% for(var i = 0; i < albums.length; i++){%>
+                <div class="column is-flex" style="justify-content: center;">
+                  <div class="flip-box">
+                    <div class="flip-box-inner">
+                      <div class="flip-box-front">
+                        <img src="<%= albums[i].image %>" alt="Paris" style="width:100%;height:100%;object-fit:contain;border-radius:5%;">
+                      </div>
+                      <div class="flip-box-back">
+                            <div class="card" style="border-radius: 5%;">
+                              <header class="card-header" style="border-radius: 5%;">
+                                <a href="/albums/<%= albums[i].name %>/view" class="card-header-icon" aria-label="more options">
+                                  <p class="card-header-title">
+                                    <%= albums[i].name %>
+                                  </p>
+                                </a>
+                              </header>
+                              <div class="card-content">
+                                <div class="content" style="height: 100px;overflow: auto;">
+                                  <%= albums[i].details %>
+                                </div>
+                              </div>
+                              <footer class="">
+                                <a href="/albums/<%= albums[i].name %>/view" class="card-footer-item"><bold>View</bold></a>
+                                <a href="#" class="card-footer-item has-text-danger" onclick="deleteAlbum('<%= albums[i].name %>')">Delete</a>
+                              </footer>
+                            </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <% }; %>
+            </div>
+        </div>
+    </div>
+  </section>
+    <div class="area" style="z-index: 0;">
+      <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul>
+    </div>
+
+  <script type="text/javascript">
+      // stop user from inserting spaces in title field
+      $("input#new_album_name").on({
+        keydown: function(e) {
+          if (e.which === 32)
+            return false;
+        },
+        change: function() {
+          this.value = this.value.replace(/\s/g, "");
+        }
+      });
+
+      function createAlbum(){
+        var name = document.getElementById('new_album_name').value
+        var details = document.getElementById('new_album_desc').value
+
+        const nameCapitalized = name.charAt(0).toUpperCase() + name.slice(1)
+
+        console.log(nameCapitalized)
+
+        if (nameCapitalized == "" || null){
+          alert("🛑 Enter a valid Name 🛑");
+        }else if (nameCapitalized.includes("/")){
+          alert("🛑 Album cannot include / 🛑");
+        }else{
+          axios.post('/newAlbum', {}, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            params: {
+              nameCapitalized,
+              details
+            }
+          })
+          .then(function (res) {
+            alert(res.data.message + "✅")
+            location.reload();
+          })
+          .catch(function(err) {
+            console.log("err response:", err.response)
+            alert("someting went wrong :(", err.response.data)
+          });
+        }
+      }
+
+      function deleteAlbum(albumName) {
+        var userConsent = confirm(`Do you want to delete album: ${albumName}?`);
+
+        if (userConsent) {
+          axios.post('/deleteAlbum', {}, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            params: {
+              albumName,
+            }
+          })
+          .then(function (res) {
+            alert(res.data.message + "✅")
+            location.reload();
+          })
+          .catch(function(err) {
+            console.log("err response:", err.response)
+            alert("someting went wrong :(", err.response.data.data)
+          });
+        }
+        return
+      }
+
+      //- pop up modal logic
+      function openForm() {
+        toggleBurger();
+        document.getElementById("toolPopup").style.display="block";
+      }
+      function closeForm() {
+        document.getElementById("toolPopup").style.display= "none";
+      }
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+        var modal = document.getElementById('toolPopup');
+        if (event.target == modal) {
+          closeForm();
+        }
+      }
+
+      function logOutUser() {
+        axios.post('/logOutUser', {}, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            params: {}
+          })
+          .then(function (res) {
+            console.log("response:", res)
+          })
+          .catch(function(err) {
+            console.log("err response:", err.response.data)
+          });
+      }
+
+      //- navbar
+      function toggleBurger() {
+        var burger = $('.burger');
+        var menu = $('.navbar-menu');
+        burger.toggleClass('is-active');
+        menu.toggleClass('is-active');
+      }
+  </script>
+  </body>
+</html>

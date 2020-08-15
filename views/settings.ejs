@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Photo Album</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <link rel="stylesheet" type="text/css" href="/style_sheets/album.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script>
+      window.onload = userAccess();
+      function userAccess(){
+        let answer = prompt("check phone for access?");
+
+        axios.post('/userAccessToConfig', {}, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          },
+          params: {
+            answer,
+          }
+        })
+        .then(function (res) {
+          // console.log("response:", res)
+          var render = function(template, node){
+            node.innerHTML = template;
+          }
+          var template = `
+          <div class="container">
+            <h1>USER SETTINGS PAGE</h1>
+            <br>
+            <div class="columns">
+              <div class="column is-half is-offset-one-quarter">
+              <h4><b>Create User</b></h4>
+              <div class="field">
+                <p class="control has-icons-left has-icons-right">
+                  <input id="create_user_name" class="input" type="user_name" placeholder="Username">
+                  <span class="icon is-user is-left">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <span class="icon is-small is-right">
+                    <i class="fas fa-check"></i>
+                  </span>
+                </p>
+              </div>
+                <div class="field">
+                  <p class="control has-icons-left has-icons-right">
+                    <input id="create_email" class="input" type="email" placeholder="Email">
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-envelope"></i>
+                    </span>
+                    <span class="icon is-small is-right">
+                      <i class="fas fa-check"></i>
+                    </span>
+                  </p>
+                </div>
+                <div class="field">
+                  <p class="control has-icons-left">
+                    <input id="create_password" class="input" type="password" placeholder="Password">
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-lock"></i>
+                    </span>
+                  </p>
+                </div>
+                <div class="field">
+                  <p class="control">
+                    <button class="button is-success" onclick="createUser()">
+                      Create
+                    </button>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="columns">
+              <div class="column is-half is-offset-one-quarter">
+              <h4>Update <b>username</b> with valid email and password</h4>
+              <div class="field">
+                <p class="control has-icons-left has-icons-right">
+                  <input id="update_user_user_name" class="input" type="user_name" placeholder="New Username">
+                  <span class="icon is-user is-left">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <span class="icon is-small is-right">
+                    <i class="fas fa-check"></i>
+                  </span>
+                </p>
+              </div>
+                <div class="field">
+                  <p class="control has-icons-left has-icons-right">
+                    <input id="update_user_email" class="input" type="email" placeholder="Email">
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-envelope"></i>
+                    </span>
+                    <span class="icon is-small is-right">
+                      <i class="fas fa-check"></i>
+                    </span>
+                  </p>
+                </div>
+                <div class="field">
+                  <p class="control has-icons-left">
+                    <input id="update_user_password" class="input" type="password" placeholder="Password">
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-lock"></i>
+                    </span>
+                  </p>
+                </div>
+                <div class="field">
+                  <p class="control">
+                    <button class="button is-success" onclick="updateUserName()">
+                      Update Username
+                    </button>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="columns">
+              <div class="column is-half is-offset-one-quarter">
+              <h4>Update <b>email</b> with valid usermame and password</h4>
+              <div class="field">
+                <p class="control has-icons-left has-icons-right">
+                  <input id="update_email_user_name" class="input" type="user_name" placeholder="User Name">
+                  <span class="icon is-user is-left">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <span class="icon is-small is-right">
+                    <i class="fas fa-check"></i>
+                  </span>
+                </p>
+              </div>
+                <div class="field">
+                  <p class="control has-icons-left has-icons-right">
+                    <input id="update_email_email" class="input" type="email" placeholder="New Email">
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-envelope"></i>
+                    </span>
+                    <span class="icon is-small is-right">
+                      <i class="fas fa-check"></i>
+                    </span>
+                  </p>
+                </div>
+                <div class="field">
+                  <p class="control has-icons-left">
+                    <input id="update_email_password" class="input" type="password" placeholder="Password">
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-lock"></i>
+                    </span>
+                  </p>
+                </div>
+                <div class="field">
+                  <p class="control">
+                    <button class="button is-success" onclick="updateEmail()">
+                      Update Email
+                    </button>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="columns">
+              <div class="column is-half is-offset-one-quarter">
+              <h4>Update <b>password</b> with valid username and email</h4>
+              <div class="field">
+                <p class="control has-icons-left has-icons-right">
+                  <input id="update_pass_user_name" class="input" type="user_name" placeholder="User Name">
+                  <span class="icon is-user is-left">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <span class="icon is-small is-right">
+                    <i class="fas fa-check"></i>
+                  </span>
+                </p>
+              </div>
+                <div class="field">
+                  <p class="control has-icons-left has-icons-right">
+                    <input id="update_pass_email" class="input" type="email" placeholder="Email">
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-envelope"></i>
+                    </span>
+                    <span class="icon is-small is-right">
+                      <i class="fas fa-check"></i>
+                    </span>
+                  </p>
+                </div>
+                <div class="field">
+                  <p class="control has-icons-left">
+                    <input id="update_pass_password" class="input" type="password" placeholder="New Password">
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-lock"></i>
+                    </span>
+                  </p>
+                </div>
+                <div class="field">
+                  <p class="control">
+                    <button class="button is-success" onclick="updatePassword()">
+                      Update Password
+                    </button>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="columns">
+              <div class="column is-half is-offset-one-quarter">
+              <h4><b>Delete User</b></h4>
+                <div class="field">
+                  <p class="control has-icons-left">
+                    <input id="delete_user" class="input" type="password" placeholder="Username to be deleted">
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-lock"></i>
+                    </span>
+                  </p>
+                </div>
+                <div class="field">
+                  <p class="control">
+                    <button class="button is-danger" onclick="deleteUser()">
+                      Delete User
+                    </button>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          `
+          render(template, document.querySelector('#main'));
+        })
+        .catch(function(err) {
+          userAccess()
+          console.log("err response:", err.response)
+        });
+      }
+    </script>
+  </head>
+  <body>
+  <section class="section" id="main">
+  </section>
+
+  <script type="text/javascript">
+      function createUser(){
+        var userName = document.getElementById('create_user_name').value
+        var email = document.getElementById('create_email').value
+        var password = document.getElementById('create_password').value
+
+        if (userName == "" || email == "" || password == ""){
+          alert("🛑 Enter valid user credentials 🛑");
+        }else{
+          axios.post('/createUser', {}, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            params: {
+              userName,
+              email,
+              password
+            }
+          })
+          .then(function (res) {
+            console.log("response:", res)
+          })
+          .catch(function(err) {
+            console.log("err response:", err.response)
+          });
+        }
+      }
+
+      function updateUserName(){
+        var userName = document.getElementById('update_user_user_name').value
+        var email = document.getElementById('update_user_email').value
+        var password = document.getElementById('update_user_password').value
+
+        if (userName == "" || email == "" || password == ""){
+          alert("🛑 Enter valid user credentials 🛑");
+        }else{
+          axios.post('/updateUserName', {}, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            params: {
+              userName,
+              email,
+              password
+            }
+          })
+          .then(function (res) {
+            console.log("response:", res)
+          })
+          .catch(function(err) {
+            console.log("err response:", err.response)
+          });
+        }
+      }
+
+      function updateEmail(){
+        var userName = document.getElementById('update_email_user_name').value
+        var email = document.getElementById('update_email_email').value
+        var password = document.getElementById('update_email_password').value
+
+        if (userName == "" || email == "" || password == ""){
+          alert("🛑 Enter valid user credentials 🛑");
+        }else{
+          axios.post('/updateEmail', {}, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            params: {
+              userName,
+              email,
+              password
+            }
+          })
+          .then(function (res) {
+            console.log("response:", res)
+          })
+          .catch(function(err) {
+            console.log("err response:", err.response)
+          });
+        }
+      }
+
+      function updatePassword(){
+        var userName = document.getElementById('update_pass_user_name').value
+        var email = document.getElementById('update_pass_email').value
+        var password = document.getElementById('update_pass_password').value
+
+        if (userName == "" || email == "" || password == ""){
+          alert("🛑 Enter valid user credentials 🛑");
+        }else{
+          axios.post('/updatePassword', {}, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            params: {
+              userName,
+              email,
+              password
+            }
+          })
+          .then(function (res) {
+            console.log("response:", res)
+          })
+          .catch(function(err) {
+            console.log("err response:", err.response)
+          });
+        }
+      }
+
+      function deleteUser() {
+        var userName = document.getElementById('delete_user').value
+        var userConsent = confirm(`Do you want to delete album: ${userName}?`);
+
+        if (userConsent) {
+          axios.post('/deleteUser', {}, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            params: {
+              userName,
+            }
+          })
+          .then(function (res) {
+            console.log("response:", res)
+          })
+          .catch(function(err) {
+            console.log("err response:", err.response)
+          });
+        }
+        return
+      }
+  </script>
+  </body>
+</html>

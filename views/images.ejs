@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Photo Album</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <link rel="stylesheet" type="text/css" href="/style_sheets/album.css">
+    <link rel="stylesheet" type="text/css" href="/style_sheets/loading.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/galleria/1.6.1/galleria.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.283.1.min.js"></script>
+    <!--style for galleria-->
+    <style>
+      .galleria {
+        width: 700px;
+        height: 400px;
+        background: #000;
+      }
+      @media only screen
+      and (device-width : 375px)
+      and (device-height : 812px)
+      and (-webkit-device-pixel-ratio : 3) {
+        .galleria {
+          width: 315px;
+          height: 200px;
+          background: #000;
+        }
+     }
+    </style>
+  </head>
+  <body onload="getAllImageDetails('<%= payload.albumName %>')">
+      <!-- start of nav -->
+  <nav class="navbar is-link" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/albums">
+        <img src="/assets/camera.png" width="50" height="30">
+        <!-- Icons made by <a href="https://www.flaticon.com/authors/ultimatearm" title="ultimatearm">ultimatearm</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a> -->
+      </a>
+
+      <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="expand-options" onclick="toggleBurger()">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="expand-options" class="navbar-menu">
+      <div class="navbar-start">
+        <span class="navbar-item" href="/albums">
+          Memorias que existiran por siempre!
+        </span>
+        <a class="navbar-item" onclick="openForm('<%= payload.photos.length %>')">
+          <b>Upload Images</b>
+        </a>
+
+        <div class="navbar-item is-hoverable">
+          <!-- <a class="navbar-link" onclick="openForm()">
+            Create Album
+          </a> -->
+
+          <!-- <div class="navbar-dropdown">
+            <a class="navbar-item" >
+              Create Album -->
+            </a>
+            <!-- <a class="navbar-item">
+              About
+            </a>
+            <a class="navbar-item">
+              Contact
+            </a>
+            <hr class="navbar-divider">
+            <a class="navbar-item">
+              Report an issue
+            </a> -->
+          <!-- </div> -->
+        </div>
+      </div>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <a id="logout" class="button is-info is-light" href="/" onclick="logOutUser()">
+              <strong>Log Out</strong>
+            </a>
+            <!-- <a class="button is-light">
+              Log in
+            </a> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <!-- end of nav -->
+  <div id="toolPopup" style="z-index: 200;margin: 0 auto;">
+    <div class="form-popup" id="popupForm">
+      <div class="form-container">
+        <h2 id="popUpTitle">Make sure is a good picture 😉</h2>
+        <div class="field">
+          <div class="control">
+            <input class="btn button is-info is-light" id="photoupload" type="file" accept="image/*" multiple>
+          </div>
+        </div>
+        <button id="addphoto" type="button" class="btn" onclick="uploadPhoto('<%= payload.albumName %>')"><b>Upload</b></button>
+        <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+      </div>
+    </div>
+  </div>
+    <section class="section">
+      <div class="container">
+        <div class="columns">
+          <div class="column">
+            <div class="galleria">
+              <% for(var i = 0; i < payload.photos.length; i++){%>
+                <img data-layer="<p><%= payload.photos[i].pKey %></p>" data-title="<a href='<%= payload.photos[i].pURL %>'>Click here to download image</a>" src="<%= payload.photos[i].pURL %>"/>
+              <% }; %>
+            </div>
+            <br />
+            <button id="delete-image" class="button is-danger is-light" onclick="deleteImage('<%= payload.albumName %>')">Delete current Image</button>
+            <button class="button is-warning is-light" onclick="setAlbumImage('<%= payload.albumName %>')">Set as default album image</button>
+          </div>
+          <div class="column">
+            <div class="field">
+              <label class="label">Image Title</label>
+              <div class="control">
+                <input id="image_title" class="input" type="text" placeholder="Image Title">
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Details</label>
+              <div class="control">
+                <textarea id="image_details" class="textarea" placeholder="Details"></textarea>
+              </div>
+            </div>
+
+            <div class="field is-grouped">
+              <div class="control">
+                <button id="btn_submit" class="button is-link is-light" onclick="createPhotoDetails('<%= payload.albumName %>')">Submit</button>
+              </div>
+              <div class="control">
+                <button id="btn_update" class="button is-success is-light" onclick="updatePhotoDetails('<%= payload.albumName %>')">Update</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div id="load" style="display: none">
+      <div id="loading-wrapper" style="z-index: 150;">
+        <div id="loading-text">Please Wait...</div>
+        <div id="loading-content"></div>
+      </div>
+    </div>
+    <div class="area" style="z-index: -1;">
+    </div>
+
+
+    <script type="text/javascript">
+    // Gallery style settings
+      (function () {
+        Galleria.loadTheme(
+          "https://cdnjs.cloudflare.com/ajax/libs/galleria/1.6.1/themes/twelve/galleria.twelve.min.js"
+        );
+        Galleria.configure({
+        transition: 'fade',
+        fullscreenCrop: false
+        });
+        Galleria.run(".galleria", {
+          responsive: true,
+          debug: false
+        });
+      })();
+
+      let rotateAngle = 90;
+      Galleria.ready(function() {
+        this.attachKeyboard({
+            down: function() {
+              var img = this.getActiveImage()
+              img.setAttribute("style", "transform: rotate(" + rotateAngle + "deg)");
+              rotateAngle = rotateAngle + 90;
+            },
+            right: function() {
+              this.next();
+            },
+            left: function() {
+              this.prev()
+            },
+            13: function() {
+                // here for return (keyCode 13) is pressed:
+            }
+        });
+      });
+
+      //- end of Galleria settings
+
+      function getAllImageDetails(albumName) {
+        axios.get(`/allImageDetails`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          },
+          params: {
+            albumName
+          }
+        })
+        .then(function (res) {
+
+          Galleria.on('image', function(e) { // e is the event object
+          // removes the photo key when viewed
+          setTimeout(function() {
+            var photoKey = document.getElementsByTagName('p')
+            photoKey[0].style.color = '#ffffff00'
+            photoKey[0].text = ""
+          }.bind(this), 1000);
+
+          //-
+
+          var title = document.getElementById('image_title')
+          var details = document.getElementById('image_details')
+          var submitBtn = document.getElementById('btn_submit')
+          var updateBtn = document.getElementById('btn_update')
+          var payload = res.data.payload
+          var found = false
+
+          for (let i=0; i < payload.length; i++){
+            if (payload[i].image_url == e.galleriaData.original.src){
+              title.value = payload[i].title;
+              details.value = payload[i].details;
+              submitBtn.disabled = true;
+              updateBtn.disabled = false;
+              found = true;
+              break;
+            }
+          }
+
+          if (!found){
+            // console.log("not found :(")
+            title.value = "";
+            details.value = "";
+            submitBtn.disabled = false;
+            updateBtn.disabled = true;
+          }
+          });
+
+        })
+        .catch(function(err) {
+          console.log("err response:", err.response)
+        });
+      }
+
+      //- for IOS to work 0.0.0
+      Function.prototype.bind = function(parent) {
+        var f = this;
+        var args = [];
+
+        for (var a = 1; a < arguments.length; a++) {
+            args[args.length] = arguments[a];
+        }
+
+        var temp = function() {
+            return f.apply(parent, args);
+        }
+
+        return(temp);
+      }
+
+
+      // uploadPhoto allows you to upload a photo
+      function uploadPhoto(albumName) {
+        document.getElementById("toolPopup").style.display = "none";
+
+        var loadingScreen = document.getElementById("load")
+        if (loadingScreen.style.display === "none") {
+          loadingScreen.style.display = "block";
+          document.body.style.background =  "#222";
+        }
+
+        var files = document.getElementById("photoupload").files;
+        let formData = new FormData();
+
+        for( var i = 0; i < files.length; i++ ){
+          let file = files[i];
+          formData.append('files', file);
+        }
+
+        if (!files.length) {
+          alert("🛑 Please choose a file to upload first. 🛑");
+        } else {
+          axios.post('/uploadPhoto', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            },
+            params: {
+              albumName
+            }
+          })
+          .then(function (res) {
+            console.log("err response:", res)
+            alert(res.data.message + "✅")
+            location.reload();
+          })
+          .catch(function(err) {
+            console.log("err response:", err.response)
+            alert("someting went wrong :(", err.response.data)
+          });
+        }
+      }
+
+      function deleteImage(albumName) {
+        var photoKey = document.getElementsByTagName('p')[0].innerText
+        var userConsent = confirm( "Do you want to delete this photo?" );
+        var imgURL = getCurrentImageURL()
+
+        if (albumName == "" || null){
+          alert(`🛑 Album name is not valid ${albumName} 🛑`);
+          return
+        } else if (userConsent) {
+          axios.post('/deletePhoto', {}, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            params: {
+              albumName,
+              photoKey,
+              imgURL
+            }
+          })
+          .then(function (res) {
+            alert(res.data.message + " (please continue...)✅")
+            // location.reload();
+          })
+          .catch(function(err) {
+            console.log("err response:", err.response)
+            alert("someting went wrong :(", err.response.data)
+          });
+        }
+        return
+      }
+
+      function setAlbumImage(albumName) {
+        var userConsent = confirm( "Do you want to to make this photo your default album image?" );
+        var imgURL
+        Galleria.ready(function() {
+          imgURL = this.getActiveImage().getAttribute("src")
+        });
+
+        if (albumName == "" || null){
+          alert(`🛑 Album name is not valid ${albumName} 🛑`);
+          return
+        } else if (userConsent) {
+          axios.post('/albumImage', {}, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            params: {
+              albumName,
+              imgURL
+            }
+          })
+          .then(function (res) {
+            alert(res.data.message + "✅")
+          })
+          .catch(function(err) {
+            console.log("err response:", err.response)
+          });
+        }
+      }
+
+      function getCurrentImageURL(){
+        let imgURL = ""
+        Galleria.ready(function() {
+          imgURL = this.getActiveImage()
+        });
+        return imgURL.src
+      }
+
+      function createPhotoDetails(albumName){
+        var title = document.getElementById('image_title').value
+        var details = document.getElementById('image_details').value
+        var imgURL = getCurrentImageURL()
+
+        if (title == "" || details == ""){
+          alert("🛑 Do not leave anything blank :( 🛑");
+        }else if (title.includes("/")){
+          alert("🛑 Title cannot include / 🛑");
+        }else{
+          axios.post('/imageDetails', {}, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            params: {
+              albumName,
+              title,
+              details,
+              imgURL
+            }
+          })
+          .then(function (res) {
+            alert(res.data.message + "✅")
+          })
+          .catch(function(err) {
+            console.log("err response:", err.response)
+          });
+        }
+      }
+
+      function updatePhotoDetails(albumName) {
+        var title = document.getElementById('image_title').value
+        var details = document.getElementById('image_details').value
+        var imgURL = getCurrentImageURL()
+
+        axios.post('/imageDetailsUpdate', {}, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            params: {
+              albumName,
+              title,
+              details,
+              imgURL
+            }
+          })
+          .then(function (res) {
+            alert(res.data.message + "✅")
+          })
+          .catch(function(err) {
+            console.log("err response:", err.response)
+          });
+      }
+
+      //- pop up modal logic
+      function openForm(imgUploadCount) {
+        toggleBurger();
+        document.getElementById("toolPopup").style.display="block";
+
+        if (imgUploadCount >= 250) {
+          document.getElementById("photoupload").disabled = true;
+          document.getElementById("addphoto").disabled = true;
+          document.getElementById("popUpTitle").style.color = "red";
+          document.getElementById("popUpTitle").innerHTML = "You Have Reach The Max Amount of Images to Upload. Create a New Album to Upload More.";
+        }
+      }
+
+      function closeForm() {
+        document.getElementById("toolPopup").style.display= "none";
+      }
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+        var modal = document.getElementById('toolPopup');
+        if (event.target == modal) {
+          closeForm();
+        }
+      }
+
+      //- navbar
+      function toggleBurger() {
+        var burger = $('.burger');
+        var menu = $('.navbar-menu');
+        burger.toggleClass('is-active');
+        menu.toggleClass('is-active');
+      }
+
+      // function getPhotoDetails(imgURL) {
+      //   console.log(imgURL)
+      //   axios.get(`/imageDetails`, {
+      //       headers: {
+      //         'Content-Type': 'application/json',
+      //         'Access-Control-Allow-Origin': '*'
+      //       },
+      //       params: {
+      //         imgURL
+      //       }
+      //     })
+      //     .then(function (res) {
+      //       console.log("response:", res)
+      //     })
+      //     .catch(function(err) {
+      //       console.log("err response:", err.response)
+      //     });
+      // }
+
+    </script>
+  </body>
+</html>
