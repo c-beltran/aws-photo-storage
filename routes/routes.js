@@ -698,25 +698,5 @@ router.post("/imageDetailsUpdate", verifyToken, function (req, res) {
   });
 });
 
-// gets the image details
-// router.get("/imageDetails", verifyToken, function (req, res) {
-//   jwt.verify(req.token, jwtSecret, function (err, authData) {
-//     if (err) {
-//       res.sendStatus(403);
-//     } else {
-//       var imgURL = req.query.imgURL
-
-//       imageDB.findByImgURL(imgURL, function(err, val) {
-//         if (err) {
-//           return res.status(400).send({
-//             message: `There was an error finding the image: ${err.stack}`,
-//           });
-//         }
-//         console.log("whats the val:", val)
-//       });
-//     }
-//   });
-// });
-
 //export file
 module.exports = router;
