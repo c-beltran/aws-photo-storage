@@ -1,5 +1,5 @@
 require("dotenv").config();
-var AWS = require("aws-sdk");
+const AWS = require("aws-sdk");
 
 module.exports = {
   configuraion: {

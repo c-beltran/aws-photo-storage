@@ -79,8 +79,8 @@ router.post("/newAlbum", verifyToken, function (req, res) {
     if (err) {
       res.sendStatus(403);
     } else {
-      var albumName = req.query.nameCapitalized;
-      var albumdetails = req.query.details;
+      const albumName = req.query.nameCapitalized;
+      const albumdetails = req.query.details;
 
       albumName = albumName.trim();
       if (!albumName) {
@@ -94,7 +94,7 @@ router.post("/newAlbum", verifyToken, function (req, res) {
         });
       }
 
-      var albumKey = encodeURIComponent(albumName) + "/";
+      const albumKey = encodeURIComponent(albumName) + "/";
       s3.headObject({ Key: albumKey }, function (err, data) {
         if (err === null) {
           return res.status(400).send("Album already exists.");
@@ -136,7 +136,7 @@ router.get("/albums/:albumName/view", verifyToken, function (req, res) {
     if (err) {
       res.sendStatus(403);
     } else {
-      var albumPhotosKey = encodeURIComponent(req.params.albumName) + "//";
+      const albumPhotosKey = encodeURIComponent(req.params.albumName) + "//";
       s3.listObjects({ Prefix: albumPhotosKey }, function (err, data) {
         if (err) {
           return res.status(400).send({
@@ -144,12 +144,12 @@ router.get("/albums/:albumName/view", verifyToken, function (req, res) {
           });
         }
         // 'this' references the AWS.Response instance that represents the response
-        var href = this.request.httpRequest.endpoint.href;
-        var bucketUrl = href + aws.s3.params.Bucket + "/";
+        const href = this.request.httpRequest.endpoint.href;
+        const bucketUrl = href + aws.s3.params.Bucket + "/";
 
-        var photos = data.Contents.map(function (photo) {
-          var photoKey = photo.Key;
-          var photoUrl = bucketUrl + encodeURIComponent(photoKey);
+        const photos = data.Contents.map(function (photo) {
+          const photoKey = photo.Key;
+          const photoUrl = bucketUrl + encodeURIComponent(photoKey);
 
           return {
             pKey: photoKey,
@@ -157,7 +157,7 @@ router.get("/albums/:albumName/view", verifyToken, function (req, res) {
           };
         });
 
-        var payload = {
+        const payload = {
           albumName: req.params.albumName,
           bucketURL: bucketUrl,
           photos: photos,
@@ -177,19 +177,19 @@ router.post("/uploadPhoto", verifyToken, upload.array("files"), function (req, r
     if (err) {
       res.sendStatus(403);
     } else {
-      var albumName = req.query.albumName;
-      var file = req.files;
-      var responseData = []
+      const albumName = req.query.albumName;
+      const file = req.files;
+      const responseData = []
 
       file.map((item) => {
-        var fileName = item.originalname;
-        var albumPhotosKey = encodeURIComponent(albumName) + "//";
-        var photoKey = albumPhotosKey + fileName;
+        const fileName = item.originalname;
+        const albumPhotosKey = encodeURIComponent(albumName) + "//";
+        const photoKey = albumPhotosKey + fileName;
 
          // file must be converted to base64 to upload to AWS
-        var base64data = new Buffer.from(item.buffer, "binary");
+        const base64data = new Buffer.from(item.buffer, "binary");
 
-        var params = {
+        const params = {
           Bucket: aws.s3.params.Bucket,
           Key: photoKey,
           Body: base64data,
@@ -220,8 +220,8 @@ router.post("/deletePhoto", verifyToken, function (req, res) {
     if (err) {
       res.sendStatus(403);
     } else {
-      var photoKey = req.query.photoKey;
-      var imgURL = req.query.imgURL;
+      const photoKey = req.query.photoKey;
+      const imgURL = req.query.imgURL;
 
       s3.deleteObject({ Key: photoKey }, function (err, data) {
         if (err) {
@@ -267,15 +267,15 @@ router.post("/deleteAlbum", verifyToken, function (req, res) {
     if (err) {
       res.sendStatus(403);
     } else {
-      var albumName = req.query.albumName;
-      var albumKey = encodeURIComponent(albumName) + "/";
+      const albumName = req.query.albumName;
+      const albumKey = encodeURIComponent(albumName) + "/";
       s3.listObjects({ Prefix: albumKey }, function (err, data) {
         if (err) {
           return res.status(400).send({
             message: `There was an error deleting your album: ${err.message}`,
           });
         }
-        var objects = data.Contents.map(function (object) {
+        const objects = data.Contents.map(function (object) {
           return { Key: object.Key };
         });
         s3.deleteObjects(
@@ -393,7 +393,7 @@ router.get("/settings", function (req, res) {
   res.render("settings");
 });
 
-// allow user to config only if secret is provided
+// allow user to configure only if secret is provided
 router.post("/userAccessToConfig", function (req, res) {
   let userAnswer = req.query.answer;
 
@@ -569,8 +569,8 @@ router.post("/albumImage", verifyToken, function (req, res) {
     if (err) {
       res.sendStatus(403);
     } else {
-      var albumName = req.query.albumName;
-      var imgURL = req.query.imgURL;
+      const albumName = req.query.albumName;
+      const imgURL = req.query.imgURL;
 
       albumDB.findByName(albumName, function (err, val) {
         if (err) {
@@ -601,11 +601,10 @@ router.post("/imageDetails", verifyToken, function (req, res) {
       res.sendStatus(403);
     } else {
 
-
-      var albumName = req.query.albumName;
-      var title = req.query.title;
-      var details = req.query.details;
-      var imgURL = req.query.imgURL;
+      const albumName = req.query.albumName;
+      const title = req.query.title;
+      const details = req.query.details;
+      const imgURL = req.query.imgURL;
 
       albumDB.findByName(albumName, function (err, val) {
         if (err) {
@@ -635,7 +634,7 @@ router.get("/allImageDetails", verifyToken, function (req, res) {
     if (err) {
       res.sendStatus(403);
     } else {
-      var albumName = req.query.albumName
+      const albumName = req.query.albumName
 
       albumDB.findByName(albumName, function(err, val) {
         if (err) {
@@ -671,10 +670,10 @@ router.post("/imageDetailsUpdate", verifyToken, function (req, res) {
       res.sendStatus(403);
     } else {
 
-      var albumName = req.query.albumName;
-      var title = req.query.title;
-      var details = req.query.details;
-      var imgURL = req.query.imgURL;
+      const albumName = req.query.albumName;
+      const title = req.query.title;
+      const details = req.query.details;
+      const imgURL = req.query.imgURL;
 
       albumDB.findByName(albumName, function (err, val) {
         if (err) {

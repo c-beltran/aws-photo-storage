@@ -111,8 +111,8 @@
     <script type="text/javascript">
       function signIn() {
         $("#btn-submit").addClass("is-loading");
-        var username = document.getElementById("input_user_name").value;
-        var password = document.getElementById("input_password").value;
+        const username = document.getElementById("input_user_name").value;
+        const password = document.getElementById("input_password").value;
 
         if (username == "" || null) {
           $("#btn-submit").removeClass("is-loading");
@@ -147,7 +147,7 @@
       }
 
       function signInOnKeyPress(e) {
-        var key = e.keyCode || e.which;
+        const key = e.keyCode || e.which;
         if (key == 13) {
           signIn();
         }

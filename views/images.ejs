@@ -90,7 +90,7 @@
         <div class="columns">
           <div class="column">
             <div class="galleria">
-              <% for(var i = 0; i < payload.photos.length; i++){%>
+              <% for(let i = 0; i < payload.photos.length; i++){%>
                 <img data-layer="<p><%= payload.photos[i].pKey %></p>" data-title="<a href='<%= payload.photos[i].pURL %>'>Click here to download image</a>" src="<%= payload.photos[i].pURL %>"/>
               <% }; %>
             </div>
@@ -233,7 +233,7 @@
         var f = this;
         var args = [];
 
-        for (var a = 1; a < arguments.length; a++) {
+        for (let a = 1; a < arguments.length; a++) {
             args[args.length] = arguments[a];
         }
 
@@ -258,7 +258,7 @@
         var files = document.getElementById("photoupload").files;
         let formData = new FormData();
 
-        for( var i = 0; i < files.length; i++ ){
+        for(let i = 0; i < files.length; i++ ){
           let file = files[i];
           formData.append('files', file);
         }
