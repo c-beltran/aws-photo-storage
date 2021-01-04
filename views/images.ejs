@@ -214,7 +214,7 @@
           }
 
           if (!found){
-            // console.log("not found :(")
+            // console.log("not found :("")
             title.value = "";
             details.value = "";
             submitBtn.disabled = false;
@@ -227,23 +227,6 @@
           console.log("err response:", err.response)
         });
       }
-
-      //- for IOS to work 0.0.0
-      Function.prototype.bind = function(parent) {
-        var f = this;
-        var args = [];
-
-        for (let a = 1; a < arguments.length; a++) {
-            args[args.length] = arguments[a];
-        }
-
-        var temp = function() {
-            return f.apply(parent, args);
-        }
-
-        return(temp);
-      }
-
 
       // uploadPhoto allows you to upload a photo
       function uploadPhoto(albumName) {
