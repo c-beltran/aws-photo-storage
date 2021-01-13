@@ -1,7 +1,7 @@
 {
   "name": "captis-memoriae",
   "version": "1.0.0",
-  "description": "Project inspired by memories, captured by a camera and will remain forever.",
+  "description": "Project inspired by memories, captured by a camera which will remain forever.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/c-beltran/captis-memoriae.git"
+    "url": "git+https://github.com/c-beltran/aws-photo-storage.git"
   },
   "author": "carlos B.",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/c-beltran/captis-memoriae/issues"
+    "url": "https://github.com/c-beltran/aws-photo-storage/issues"
   },
-  "homepage": "https://github.com/c-beltran/captis-memoriae#readme",
+  "homepage": "https://github.com/c-beltran/aws-photo-storage#readme",
   "dependencies": {
     "aws-sdk": "^2.656.0",
     "axios": "^0.19.2",
