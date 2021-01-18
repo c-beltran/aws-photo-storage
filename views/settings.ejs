@@ -13,7 +13,7 @@
     <script>
       window.onload = userAccess();
       function userAccess(){
-        let answer = prompt("check phone for access?");
+        let answer = prompt("Enter secret for access?");
 
         axios.post('/userAccessToConfig', {}, {
           headers: {
@@ -257,7 +257,7 @@
             }
           })
           .then(function (res) {
-            console.log("response:", res)
+            alert("Successfully created ✅")
           })
           .catch(function(err) {
             console.log("err response:", err.response)
@@ -285,7 +285,7 @@
             }
           })
           .then(function (res) {
-            console.log("response:", res)
+            alert("Successfully updated ✅")
           })
           .catch(function(err) {
             console.log("err response:", err.response)
@@ -313,7 +313,7 @@
             }
           })
           .then(function (res) {
-            console.log("response:", res)
+            alert("Successfully updated ✅")
           })
           .catch(function(err) {
             console.log("err response:", err.response)
@@ -341,7 +341,7 @@
             }
           })
           .then(function (res) {
-            console.log("response:", res)
+            alert("Successfully updated ✅")
           })
           .catch(function(err) {
             console.log("err response:", err.response)
@@ -364,7 +364,7 @@
             }
           })
           .then(function (res) {
-            console.log("response:", res)
+            alert("Successfully deleted ✅")
           })
           .catch(function(err) {
             console.log("err response:", err.response)
