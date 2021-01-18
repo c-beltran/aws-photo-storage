@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 var aws = require("../config/aws.js");
 var albumsDB = require("../models/albums.js");
 var usersDB = require("../models/users.js");
@@ -82,7 +80,6 @@ router.post("/newAlbum", verifyToken, function (req, res) {
       const albumName = req.query.nameCapitalized;
       const albumdetails = req.query.details;
 
-      albumName = albumName.trim();
       if (!albumName) {
         res.status(400).send({
           message: "Album names must contain at least one non-space character.",
@@ -314,7 +311,7 @@ router.post("/deleteAlbum", verifyToken, function (req, res) {
   });
 });
 
-// - login & auth
+//- Authentication
 
 // login/verify user
 router.post("/login", function (req, res) {
