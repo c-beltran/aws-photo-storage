@@ -1,9 +1,9 @@
 require("dotenv").config();
 
 var aws = require("../config/aws.js");
-var albumDB = require("../models/albums.js");
-var userDB = require("../models/users.js");
-var imageDB = require("../models/images.js");
+var albumsDB = require("../models/albums.js");
+var usersDB = require("../models/users.js");
+var imagesDB = require("../models/images.js");
 
 var express = require("express");
 var jwt = require("jsonwebtoken");
@@ -46,7 +46,7 @@ router.get("/albums", verifyToken, function (req, res) {
           }
 
           // find albums imgURL from db
-          albumDB.findAllImgBkgs(function (err, val) {
+          albumsDB.findAllImgBkgs(function (err, val) {
             if (err) {
               console.log("err finding imgURLs: ", err.stack);
             }
@@ -112,7 +112,7 @@ router.post("/newAlbum", verifyToken, function (req, res) {
             });
           }
 
-          albumDB.create(albumName, albumdetails, function (err, val) {
+          albumsDB.create(albumName, albumdetails, function (err, val) {
             if (err) {
               return res.status(400).send({
                 message: `There was an error creating your album: ${err.stack}`,
@@ -230,7 +230,7 @@ router.post("/deletePhoto", verifyToken, function (req, res) {
           });
         }
 
-        imageDB.findByImgURL(imgURL, function(err, val){
+        imagesDB.findByImgURL(imgURL, function(err, val){
           if (err) {
             return res.status(404).send({
               message: `There was an error finding photo to be deleted: ${err.message}`,
@@ -243,7 +243,7 @@ router.post("/deletePhoto", verifyToken, function (req, res) {
               message: `Photo was Successfully deleted.`,
             });
           } else {
-            imageDB.delete(val.image_id, function(err, val){
+            imagesDB.delete(val.image_id, function(err, val){
               if (err) {
                 return res.status(404).send({
                   message: `There was an error deleting photo: ${err.message}`,
@@ -289,12 +289,12 @@ router.post("/deleteAlbum", verifyToken, function (req, res) {
               });
             }
 
-            albumDB.findByName(albumName, function (err, val) {
+            albumsDB.findByName(albumName, function (err, val) {
               if (err) {
                 console.log("There was an error finding your album: ", err.stack);
               }
 
-              albumDB.delete(val.id, function (err) {
+              albumsDB.delete(val.id, function (err) {
                 if (err) {
                   console.log(
                     "There was an error deleting your album: ",
@@ -321,14 +321,14 @@ router.post("/login", function (req, res) {
   let username = req.query.username;
   let password = req.query.password;
 
-  userDB.findByUserName(username, async (err, val) => {
+  usersDB.findByUserName(username, async (err, val) => {
     if (val === undefined) {
       return res.status(404).send({
         message: `Invalid username or password, login is case sensitive`,
       });
     } else if (err) {
       return res.status(500).send({
-        message: `userDB.findByUserName: ${err.stack}`,
+        message: `usersDB.findByUserName: ${err.stack}`,
       });
     }
 
@@ -415,7 +415,7 @@ router.post("/createUser", async (req, res) => {
     const salt = await bcrypt.genSalt(15);
     const hashedPswd = await bcrypt.hash(password, salt);
 
-    userDB.create(userName, email, hashedPswd, async (err, val) => {
+    usersDB.create(userName, email, hashedPswd, async (err, val) => {
       if (err) {
         return res.status(500).send({
           message: `There was an error creating the user: ${err.stack}`,
@@ -435,7 +435,7 @@ router.post("/updateUserName", async (req, res) => {
   const email = req.query.email;
   const password = req.query.password;
 
-  userDB.findByEmail(email, async (err, val) => {
+  usersDB.findByEmail(email, async (err, val) => {
     if (err) {
       return res.status(500).send({
         message: `user not found: ${err.stack}`,
@@ -444,7 +444,7 @@ router.post("/updateUserName", async (req, res) => {
 
     try {
       if (await bcrypt.compare(password, val.password)) {
-        userDB.updateUserName(userName, email, async (err, val) => {
+        usersDB.updateUserName(userName, email, async (err, val) => {
           if (err) {
             return res.status(500).send({
               message: `error updating username: ${err.stack}`,
@@ -468,7 +468,7 @@ router.post("/updateEmail", async (req, res) => {
   const email = req.query.email;
   const password = req.query.password;
 
-  userDB.findByUserName(userName, async (err, val) => {
+  usersDB.findByUserName(userName, async (err, val) => {
     if (err) {
       return res.status(500).send({
         message: `user not found: ${err.stack}`,
@@ -477,7 +477,7 @@ router.post("/updateEmail", async (req, res) => {
 
     try {
       if (await bcrypt.compare(password, val.password)) {
-        userDB.updateEmail(email, userName, async (err, val) => {
+        usersDB.updateEmail(email, userName, async (err, val) => {
           if (err) {
             return res.status(500).send({
               message: `error updating email: ${err.stack}`,
@@ -501,13 +501,13 @@ router.post("/updatePassword", async (req, res) => {
   const email = req.query.email;
   const password = req.query.password;
 
-  userDB.findByEmail(email, async (err, val) => {
+  usersDB.findByEmail(email, async (err, val) => {
     if (err) {
       return res.status(500).send({
         message: `user not found: ${err.stack}`,
       });
     }
-    userDB.findByUserName(userName, async (err, val) => {
+    usersDB.findByUserName(userName, async (err, val) => {
       if (err) {
         return res.status(500).send({
           message: `user not found: ${err.stack}`,
@@ -519,7 +519,7 @@ router.post("/updatePassword", async (req, res) => {
         const salt = await bcrypt.genSalt(15);
         const hashedPswd = await bcrypt.hash(password, salt);
 
-        userDB.updatePassword(hashedPswd, email, async (err, val) => {
+        usersDB.updatePassword(hashedPswd, email, async (err, val) => {
           if (err) {
             return res.status(500).send({
               message: `error updating email: ${err.stack}`,
@@ -541,13 +541,13 @@ router.post("/updatePassword", async (req, res) => {
 router.post("/deleteUser", async (req, res) => {
   const userName = req.query.userName;
 
-  userDB.findByUserName(userName, async (err, val) => {
+  usersDB.findByUserName(userName, async (err, val) => {
     if (err) {
       return res.status(500).send({
         message: `error user not found: ${err.stack}`,
       });
     }
-    userDB.delete(val.email, async (err, val) => {
+    usersDB.delete(val.email, async (err, val) => {
       if (err) {
         return res.status(500).send({
           message: `error user not removed: ${err.stack}`,
@@ -572,14 +572,14 @@ router.post("/albumImage", verifyToken, function (req, res) {
       const albumName = req.query.albumName;
       const imgURL = req.query.imgURL;
 
-      albumDB.findByName(albumName, function (err, val) {
+      albumsDB.findByName(albumName, function (err, val) {
         if (err) {
           return res.status(400).send({
             message: `There was an error finding the album: ${err.stack}`,
           });
         }
 
-        albumDB.updateImgBkg(val.id, imgURL, function (err, val) {
+        albumsDB.updateImgBkg(val.id, imgURL, function (err, val) {
           if (err) {
             return res.status(400).send({
               message: `There was an error setting image background: ${err.stack}`,
@@ -606,14 +606,14 @@ router.post("/imageDetails", verifyToken, function (req, res) {
       const details = req.query.details;
       const imgURL = req.query.imgURL;
 
-      albumDB.findByName(albumName, function (err, val) {
+      albumsDB.findByName(albumName, function (err, val) {
         if (err) {
           return res.status(400).send({
             message: `There was an error finding the album: ${err.stack}`,
           });
         }
 
-        imageDB.create(val.id, title, details, imgURL, function(err, val) {
+        imagesDB.create(val.id, title, details, imgURL, function(err, val) {
           if (err) {
             return res.status(400).send({
               message: `There was an error saving image details: ${err.stack}`,
@@ -636,7 +636,7 @@ router.get("/allImageDetails", verifyToken, function (req, res) {
     } else {
       const albumName = req.query.albumName
 
-      albumDB.findByName(albumName, function(err, val) {
+      albumsDB.findByName(albumName, function(err, val) {
         if (err) {
           return res.status(400).send({
             message: `There was an error finding the album: ${err.stack}`,
@@ -647,7 +647,7 @@ router.get("/allImageDetails", verifyToken, function (req, res) {
           });
         }
 
-        imageDB.findByAlbumID(val.id, function(err, val) {
+        imagesDB.findByAlbumID(val.id, function(err, val) {
           if (err) {
             return res.status(400).send({
               message: `There was an error finding the image: ${err.stack}`,
@@ -675,14 +675,14 @@ router.post("/imageDetailsUpdate", verifyToken, function (req, res) {
       const details = req.query.details;
       const imgURL = req.query.imgURL;
 
-      albumDB.findByName(albumName, function (err, val) {
+      albumsDB.findByName(albumName, function (err, val) {
         if (err) {
           return res.status(400).send({
             message: `There was an error finding the album: ${err.stack}`,
           });
         }
 
-        imageDB.update(title, details, imgURL, val.id, function(err, val) {
+        imagesDB.update(title, details, imgURL, val.id, function(err, val) {
           if (err) {
             return res.status(400).send({
               message: `There was an error updating image details: ${err.stack}`,

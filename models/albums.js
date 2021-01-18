@@ -3,7 +3,7 @@ var db = require("../config/db.js");
 module.exports = {
   create: function (name, details, callback) {
     const date = new Date().toLocaleString().split(',')[0]
-    const q = `INSERT INTO album (
+    const q = `INSERT INTO albums (
             name,
             details,
             created_at)
@@ -20,7 +20,7 @@ module.exports = {
   },
 
   delete: function (id, callback) {
-    const q = `DELETE FROM album
+    const q = `DELETE FROM albums
             WHERE id = $1;`;
     const values = [id];
 
@@ -34,7 +34,7 @@ module.exports = {
   },
 
   updateDetails: function (id, callback) {
-    const q = `UPDATE album
+    const q = `UPDATE albums
             SET
                 details = $1
             WHERE
@@ -53,7 +53,7 @@ module.exports = {
   findByName: function (name, callback) {
     const q = `SELECT id
             FROM
-                album
+                albums
             WHERE
                 name = $1`;
     const values = [name];
@@ -70,7 +70,7 @@ module.exports = {
   findImgBkg: function (id, callback) {
     const q = `SELECT image_background_url, details
             FROM
-                album
+                albums
             WHERE
                 id = $1`;
     const values = [id];
@@ -87,7 +87,7 @@ module.exports = {
   findAllImgBkgs: function (callback) {
     const q = `SELECT name, image_background_url, details
             FROM
-                album
+                albums
             ORDER BY
                 name ASC;`;
     const values = [];
@@ -102,7 +102,7 @@ module.exports = {
   },
 
   updateImgBkg: function (id, imgURL, callback) {
-    const q = `UPDATE album
+    const q = `UPDATE albums
             SET
                 image_background_url = $1
             WHERE
