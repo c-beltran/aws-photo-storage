@@ -66,3 +66,5 @@ You should see a message on your terminal saying `STARTED APP ON PORT 8000`.
 Go to your browser and type `http://localhost:8000/`, you should see the _Welcome_ page.
 
 To create a user go to `http://localhost:8000/settings` and enter your `SECRET_PASSWORD`. You should now be able to log in and start creating albums and uploading photos to your S3 bucket.
+
+Code released under [the MIT license](https://github.com/c-beltran/aws-photo-storage/blob/master/LICENSE).
