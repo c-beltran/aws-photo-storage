@@ -6,7 +6,7 @@
 * [Setup](#setup)
 
 ## General info
-This is a simple budget friendly photo album. You can read more about my journey on this project in the following blog post [insert medium article]().
+This is a simple budget friendly photo album. You can read more about my journey on this project in the following blog post - _[budget photo album using aws s3](https://beltranca.medium.com/budget-photo-album-using-aws-s3-fbef342b2bcf)_.
 
 ## Technologies
 Project is created with:
