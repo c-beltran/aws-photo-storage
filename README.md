@@ -27,7 +27,7 @@ Project is created with:
 To run this project, you will need the following:
 - An AWS [account](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/).
 - Follow the prerequisite tasks and CORS configuration from this [AWS doc](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/s3-example-photo-album.html).
-- Create a postgres database with for this project, I've set it to `memories`.
+- Create a postgres database for this project, I've set it to `memories` you may name it whatever you want.
 
 After completing the above and cloning the project, you can uncomment and update the environment variables accordingly in the `.env` file.
 ```bash
